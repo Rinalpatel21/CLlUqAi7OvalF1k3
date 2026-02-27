@@ -46,9 +46,8 @@ EDA was performed to understand feature behavior and relationships with customer
 - Compared feature averages between happy vs unhappy customers
 
 ### Key Findings:
-- Dataset slightly balanced between happy and unhappy customers
-- Courier satisfaction (X5) and delivery timeliness (X1) showed strong positive relationship with happiness
-- Pricing perception (X4) had weaker influence
+- Dataset slightly unbalanced between happy and unhappy customers
+- Courier satisfaction (X5) and delivery timeliness (X1) showed positive relationship with happiness
 - No severe multicollinearity observed among predictors
 
 EDA helped guide model selection and interpretation strategy.
@@ -69,7 +68,6 @@ To ensure robust and unbiased modeling:
 - No categorical encoding required (already numeric)
 
 ### Scaling
-- Applied standardization when required for certain models
 - Logistic regression performed well without heavy scaling due to similar feature ranges
 
 ### Train-Test Split
@@ -121,19 +119,121 @@ Models were evaluated using:
 - ROC-AUC
 - Confusion Matrix
 
-### Key Observations:
-- Logistic Regression generalized well on test data
-- Decision Trees showed risk of overfitting without tuning
-- Ensemble methods did not significantly outperform logistic regression due to small dataset size
-- Threshold optimization improved recall and business usability
+## Model Performance – Key Observations (Detailed)
 
-### Final Model Selection:
-**Logistic Regression** was selected due to:
-- Strong generalization
-- Interpretability
-- Clear feature impact explanation
-- Balanced precision-recall performance
+### Logistic Regression Generalized Well on Test Data
+The Logistic Regression model demonstrated strong generalization capability, meaning its performance remained consistent between training and testing datasets.  
 
+- Training and testing metrics were closely aligned, indicating **low variance** and minimal overfitting.
+- The model captured the underlying relationship between survey responses and customer happiness without memorizing training data patterns.
+- Stable recall and precision across datasets showed the model can reliably predict outcomes on unseen data.
+- This consistency makes the model suitable for real-world deployment where new customer responses continuously arrive.
+
+---
+
+###  Decision Trees Showed Overfitting Risk and Limited Generalization
+The initial Decision Tree model significantly overfit the training data:
+
+- Very high training performance but noticeably lower testing performance.
+- The model learned noise and specific patterns unique to the training dataset.
+
+After hyperparameter tuning:
+- Tree depth and split constraints reduced overfitting.
+- However, performance declined on both training and testing datasets.
+- The tuned model failed to capture stable predictive patterns, indicating **limited generalization capability** for this small dataset.
+
+This suggests Decision Trees require more data to perform reliably.
+
+---
+
+### Ensemble Methods Did Not Outperform Logistic Regression
+Ensemble models (Random Forest, Bagging, Gradient Boosting) were explored to improve predictive accuracy.
+
+Observations:
+- Slight improvements in training performance but inconsistent testing results.
+- Models showed sensitivity to dataset size (only 126 observations).
+- Ensemble algorithms typically require larger datasets to leverage variance reduction effectively.
+- Increased complexity did not translate into meaningful performance gains.
+
+Therefore, simpler models proved more effective for this problem.
+
+---
+
+### Threshold Optimization Improved Recall and Business Usability
+Probability threshold tuning was applied to the Logistic Regression model using Precision–Recall analysis.
+
+- Default threshold (0.50) was adjusted to **0.48**.
+- Recall improved by approximately **10%**, allowing the model to identify more unhappy customers.
+- Higher recall is valuable in customer satisfaction problems because missing dissatisfied customers can lead to churn.
+- Precision remained reasonably stable, preserving prediction reliability.
+
+This adjustment aligned model performance with business priorities.
+
+---
+
+## Final Model Selection
+
+### Selected Model: **Logistic Regression (Threshold = 0.48)**
+
+**Performance:**
+- Recall: **81%**
+- Precision: **55%**
+- Strong and consistent results across both training and testing datasets.
+
+The model achieved the best balance between predictive performance, interpretability, and business applicability.
+
+---
+
+## Reasons for Selecting Logistic Regression (Detailed)
+
+###  Strong Generalization
+- Minimal performance gap between training and testing datasets.
+- Indicates low overfitting and good bias–variance balance.
+- Reliable predictions expected when applied to future customer data.
+- Stable evaluation metrics across validation steps.
+
+---
+
+###  High Interpretability
+- Model coefficients directly explain how each feature affects customer happiness.
+- Odds ratios quantify impact in business-friendly terms (e.g., % increase in happiness odds).
+- Stakeholders can easily understand *why* predictions are made.
+- Supports transparent, explainable AI practices.
+
+---
+
+###  Clear Feature Impact Explanation
+Logistic regression enables direct interpretation of feature influence:
+
+- Positive coefficients → increase likelihood of happiness.
+- Negative coefficients → decrease likelihood.
+- Odds ratio conversion translates statistical output into actionable insights.
+
+Example:
+- Courier satisfaction increased happiness odds significantly.
+- Pricing perception showed relatively smaller influence.
+
+This clarity allows teams to prioritize operational improvements.
+
+---
+
+###  Balanced Precision–Recall Performance
+The final model achieved a practical balance:
+
+- **High Recall (81%)**
+  - Successfully identifies most unhappy customers.
+  - Reduces risk of overlooking dissatisfied users.
+
+- **Moderate Precision (55%)**
+  - Predictions remain reasonably accurate.
+  - Limits excessive false alarms.
+
+This balance is ideal for customer experience applications where detecting dissatisfaction early is more valuable than maximizing accuracy alone.
+
+---
+
+**Conclusion:**  
+Logistic Regression provided the optimal combination of predictive stability, explainability, and business relevance, making it the most suitable model for deployment in customer happiness prediction.
 ---
 
 # Feature Importance Insights
