@@ -10,7 +10,6 @@ This end-to-end data science project covers:
 - Model evaluation and comparison
 - Business recommendations based on insights
 
----
 
 # Dataset Overview
 
@@ -32,7 +31,6 @@ This end-to-end data science project covers:
 
 All features are ordinal ratings, making the dataset structured and suitable for classification modeling.
 
----
 
 # Exploratory Data Analysis (EDA)
 
@@ -52,7 +50,6 @@ EDA was performed to understand feature behavior and relationships with customer
 
 EDA helped guide model selection and interpretation strategy.
 
----
 
 # Data Processing & Strategy
 
@@ -73,8 +70,6 @@ To ensure robust and unbiased modeling:
 ### Train-Test Split
 - Used stratified split to preserve class distribution
 - Ensured reliable model evaluation
-
----
 
 # Model Approaches
 
@@ -106,8 +101,6 @@ Purpose:
   - Class weights
   - Number of estimators
 
----
-
 # Model Performance
 
 Models were evaluated using:
@@ -119,217 +112,56 @@ Models were evaluated using:
 - ROC-AUC
 - Confusion Matrix
 
-## Model Performance – Key Observations 
+## Comparison of Model Effectiveness and Generalization
 
-### Logistic Regression Generalized Well on Test Data
-The Logistic Regression model demonstrated strong generalization capability, meaning its performance remained consistent between training and testing datasets.  
+### Overfitting Tendencies
+Many of the advanced models (Decision Tree untuned, Random Forest, Bagging, XGBoost, AdaBoost) exhibited significant overfitting. Their training performance was very high (e.g., F1-score > 0.8), but this dropped substantially on the test set (e.g., F1-score < 0.6). This indicates that these models learned the training data too well and failed to generalize to new, unseen data.
 
-- Training and testing metrics were closely aligned, indicating minimal overfitting.
-- Stable recall and precision across datasets showed the model can reliably predict outcomes on unseen data.
-- This consistency makes the model suitable for real-world deployment where new customer responses continuously arrive.
+### Logistic Regression Models
+The Logistic Regression models (both statsmodels and sklearn implementations) showed much better generalization. The difference between training and test set metrics was relatively small, suggesting they are not overfitting. Although their raw performance metrics (Accuracy, F1-score) are not as high as the overfit training scores of other models, their consistent performance makes them more reliable.
 
----
+### Impact of X_mean Feature
+The statsmodels Logistic Regression using only X_mean as a predictor achieved a remarkable recall of **0.905** on the test set. This highlights the potential simplicity in predicting happiness if an aggregate score is sufficiently informative. However, its precision is lower, meaning it might flag many customers as happy who are not.
 
-###  Decision Trees Showed Overfitting Risk and Limited Generalization
-The initial Decision Tree model significantly overfit the training data:
+### Optimal Threshold Application
+Applying an optimal threshold (**0.45**) to the statsmodels Logistic Regression model (with all features) significantly boosted recall on the test set to **0.810**, while maintaining a reasonable F1-score of **0.680**. This demonstrates the importance of threshold tuning for specific optimization goals.
 
-- Very high training performance but noticeably lower testing performance.
-- The model learned noise and specific patterns unique to the training dataset.
-
-After hyperparameter tuning:
-- Tree depth and split constraints reduced overfitting.
-- However, performance declined on both training and testing datasets.
-- The tuned model failed to capture stable predictive patterns, indicating limited generalization capability for this small dataset.
-
-This suggests Decision Trees require more data to perform reliably.
-
----
-
-### Ensemble Methods Did Not Outperform Logistic Regression
-Ensemble models (Random Forest, Bagging, Gradient Boosting) were explored to improve predictive accuracy.
-
-Observations:
-- Slight improvements in training performance but inconsistent testing results.
-- Models showed sensitivity to dataset size (only 126 observations).
-- Ensemble algorithms typically require larger datasets to leverage variance reduction effectively.
-- Increased complexity did not translate into meaningful performance gains.
-
-Therefore, simpler models proved more effective for this problem.
-
----
-
-### Threshold Optimization Improved Recall and Business Usability
-Probability threshold tuning was applied to the Logistic Regression model using Precision–Recall analysis.
-
-- Default threshold (0.50) was adjusted to 0.48.
-- Recall improved by approximately **10%**, allowing the model to identify more unhappy customers.
-- Higher recall is valuable in customer satisfaction problems because missing dissatisfied customers can lead to churn.
-- Precision remained reasonably stable, preserving prediction reliability.
-
-This adjustment aligned model performance with business priorities.
-
----
+### sklearn Logistic Regression Performance
+The sklearn Logistic Regression (with `class_weight='balanced'`) showed stable performance, with a test recall of **0.619**. Removing feature X6 from this model resulted in very similar performance (test recall **0.619**), suggesting X6 might not be a crucial predictor.
 
 ## Final Model Selection
 
-### Selected Model: **Logistic Regression (Threshold = 0.48)**
+Given the goal of maximizing Recall (to predict as many happy customers as possible to take action), the Logistic Regression model using only X_mean stands out with a test recall of **0.905**. While its precision (**0.633**) is not the highest, its ability to identify a large proportion of truly happy customers is superior. If the company prioritizes identifying most happy customers, even at the cost of some false positives, this model is the most effective.
 
-**Performance:**
-- Recall: **81%**
-- F1 Score: **65%**
-- Strong and consistent results across both training and testing datasets.
-
-The model achieved the best balance between predictive performance, interpretability, and business applicability.
-
----
-
-## Reasons for Selecting Logistic Regression 
-
-###  Strong Generalization
-- Minimal performance gap between training and testing datasets.
-- Indicates low overfitting and good bias–variance balance.
-- Reliable predictions expected when applied to future customer data.
-- Stable evaluation metrics across validation steps.
-
----
-
-###  High Interpretability
-- Model coefficients directly explain how each feature affects customer happiness.
-- Odds ratios quantify impact in business-friendly terms (e.g., % increase in happiness odds).
-- Stakeholders can easily understand *why* predictions are made.
-- Supports transparent, explainable AI practices.
-
----
-
-###  Clear Feature Impact Explanation
-Logistic regression enables direct interpretation of feature influence:
-
-- Positive coefficients → increase likelihood of happiness.
-- Negative coefficients → decrease likelihood.
-- Odds ratio conversion translates statistical output into actionable insights.
-
-Example:
-- Courier satisfaction increased happiness odds significantly.
-- Pricing perception showed relatively smaller influence.
-
-This clarity allows teams to prioritize operational improvements.
-
----
-
-###  Balanced Precision–Recall Performance
-The final model achieved a practical balance:
-
-- **High Recall (81%)**
-  - Successfully identifies most unhappy customers.
-  - Reduces risk of overlooking dissatisfied users.
-
-- **Moderate Precision (55%)**
-  - Predictions remain reasonably accurate.
-  - Limits excessive false alarms.
-
-This balance is ideal for customer experience applications where detecting dissatisfaction early is more valuable than maximizing accuracy alone.
-
----
+Alternatively, Logistic Regression with all features and an optimal threshold of **0.45** also performed strongly with a test recall of **0.810** and a slightly better F1-score of **0.680**, offering a good balance.
 
 **Conclusion:**  
 Logistic Regression provided the optimal combination of predictive stability, explainability, and business relevance, making it the most suitable model for deployment in customer happiness prediction.
----
 
 # Feature Importance Insights
+### Most Important Features
+Based on the statsmodels Logistic Regression (which offers interpretable coefficients), X5 (courier satisfaction) and X1 (on-time delivery) are the most important features positively impacting customer happiness. X3 (ordered everything wanted) and X4 (good price) are also significant. X2 ('contents as expected') is important, albeit negatively correlated, indicating it's still a significant factor in dissatisfaction.
+### Minimal Set of Attributes
+A minimal set of attributes that would preserve most information about customer happiness would likely include X1, X2, X3, X4, and X5. These features consistently show a positive and relatively strong association with customer happiness across models (especially logistic regression's odds ratios). X2 is important as it indicates a strong negative impact
+### Question to Remove
+X6 ('the app makes ordering easy for me') is the strongest candidate for removal in the next survey. Its impact on customer happiness, as measured by the odds ratio in logistic regression, is the smallest among all positive predictors (8% increase). More importantly, its removal from the sklearn Logistic Regression model resulted in virtually no change in performance metrics, indicating it provides minimal unique predictive value to this model.
 
-Odds ratio interpretation revealed:
+### Important Business Consideration about Feature Elimination
+Feature elimination does not imply that app usability is unimportant operationally. Rather, it indicates that within this dataset, app ease of ordering does not significantly differentiate happy and unhappy customers.
 
-- **X5 (Courier Satisfaction)** → Strongest positive driver of happiness  
-- **X3 (Order Completeness)** → Significant positive impact  
-- **X1 (On-Time Delivery)** → Meaningful contributor  
-- **X4 (Pricing)** → Lower relative impact  
 
-This insight helps prioritize operational improvements.
+## Overall Insights and Actionable Recommendations
+### Enhance Courier Experience
+The courier interaction is the final brand touchpoint and has the biggest impact on satisfaction. Couriers should be trained in customer communication and professionalism, their performance should be tracked using customer ratings, high satisfaction scores should be incentivized, and best practices from top performers should be replicated. This approach leads to the fastest and largest improvement in customer happiness.
 
----
+### Improve Delivery Reliability (X1)
+On-time delivery builds trust and reliability. Delivery routes should be optimized using data, real-time tracking updates should be provided, customers should be notified proactively about delays, and courier capacity should be increased during peak hours. Implementing these actions reduces frustration and strengthens customer trust.
 
-##  Business Recommendations 
+### Reduce Expectation Gaps (X2 — Risk Factor)
+Customers become unhappy when orders do not match their expectations. Product descriptions and images should be improved, inventory should be synced in real time, order verification should be added before shipment, and customers should be notified early about substitutions. These measures result in fewer complaints and a smoother customer experience.
 
-Based on model insights and feature importance analysis, the following data-driven recommendations can help improve overall customer happiness and reduce dissatisfaction risk.
-
----
-
-### 1. Improve Courier Experience
-- Invest in structured courier training programs focused on:
-  - Professional communication
-  - Customer interaction etiquette
-  - Safe and efficient delivery handling
-- Introduce performance scorecards for delivery personnel based on customer feedback.
-- Implement real-time delivery feedback collection after each order.
-- Use customer ratings to identify high-performing couriers and replicate best practices.
-- Provide incentives or recognition programs tied to customer satisfaction scores.
-
-**Expected Impact:**  
-Improved last-mile experience leading to higher customer trust and repeat usage.
-
----
-
-###  2. Ensure Order Accuracy
-- Improve inventory synchronization between ordering platform and warehouse systems.
-- Implement barcode or automated scanning validation before shipment.
-- Add a final verification checkpoint during order packing.
-- Use historical error data to identify high-risk products or fulfillment stages.
-- Introduce automated alerts for frequent substitution or stock mismatch issues.
-
-**Expected Impact:**  
-Reduction in returns, complaints, and negative customer experiences.
-
----
-
-###  3. Maintain Delivery Timeliness
-- Optimize logistics routes using data-driven routing algorithms.
-- Analyze peak delivery hours and allocate courier resources dynamically.
-- Provide customers with accurate real-time delivery tracking.
-- Use predictive delay detection to notify customers proactively.
-
-**Expected Impact:**  
-Higher reliability perception and improved customer confidence.
-
----
-
-###  4. Implement Predictive Monitoring System
-- Deploy the model to generate customer happiness probability scores after each order.
-- Flag customers below a defined satisfaction threshold (e.g., probability < 0.5).
-- Trigger automated workflows such as:
-  - Follow-up emails
-  - Discount offers
-  - Customer support outreach
-- Integrate predictions into CRM dashboards for customer success teams.
-- Track intervention outcomes to continuously improve prediction strategy.
-
-**Expected Impact:**  
-Proactive issue resolution and reduced customer churn.
-
----
-
-###  5. Establish Continuous Feedback Loop
-- Continuously collect survey responses after deliveries.
-- Retrain models periodically with updated data.
-- Monitor prediction accuracy and performance drift.
-- Use A/B testing to evaluate operational improvements.
-- Combine survey insights with behavioral data (purchase frequency, complaints).
-
-**Expected Impact:**  
-Sustained improvement in customer satisfaction and model reliability.
-
----
-
-###  Overall Business Value
-
-Implementing these recommendations enables organizations to:
-
-- Detect dissatisfaction early
-- Improve operational efficiency
-- Enhance customer retention
-- Optimize delivery operations
-- Make data-driven customer experience decisions
-
-These actions transform predictive analytics into measurable business outcomes.
+### Increase Data Collection
+The small dataset size (126 rows) limits the effectiveness of complex models and their ability to generalize. Collecting significantly more customer feedback data is crucial for improving predictive accuracy and model robustness.
 
 # Conclusions
 
@@ -338,30 +170,4 @@ These actions transform predictive analytics into measurable business outcomes.
 - Small structured datasets may favor simpler models over complex ensembles.
 - Predictive analytics can support proactive customer retention strategies.
 
----
 
-# Future Improvements
-
-- Collect larger dataset for stronger model generalization
-- Incorporate behavioral features (order frequency, complaints)
-- Deploy model as API for real-time predictions
-- Monitor model drift over time
-- Conduct A/B testing on operational improvements
-
----
-
-# Tech Stack
-
-- Python
-- Pandas
-- NumPy
-- Scikit-learn
-- Statsmodels
-- Matplotlib
-- Seaborn
-
----
-
-
----
- This project demonstrates applied machine learning, statistical modeling, and business-focused analytics for customer experience optimization.
