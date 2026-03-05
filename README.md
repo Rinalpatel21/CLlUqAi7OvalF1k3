@@ -84,7 +84,7 @@ Models were evaluated using:
 ## Comparison of Model Effectiveness and Generalization
 
 ### Overfitting Tendencies
-- Many of the advanced models (Decision Tree untuned, Random Forest, Bagging, XGBoost, AdaBoost) exhibited significant overfitting. Their training performance was very high (e.g., F1-score > 0.8), but this dropped substantially on the test set (e.g., F1-score < 0.6). This indicates that these models learned the training data too well and failed to generalize to new, unseen data.
+- Many of the Ensemble Techniques (Decision Tree, Random Forest, XGBoost, AdaBoost tuned) exhibited significant overfitting. Their training performance was very high (e.g., F1-score > 0.8), but this dropped substantially on the test set (e.g., F1-score < 0.6). This indicates that these models learned the training data too well and failed to generalize to new, unseen data.
 
 ### Logistic Regression Models
 - The Logistic Regression model showed much better generalization. The difference between training and test set metrics was relatively small, suggesting they are not overfitting. Although their raw performance metrics (Accuracy, F1-score) are not as high as the overfit training scores of other models, their consistent performance makes them more reliable.
