@@ -66,7 +66,7 @@ A progressive modeling strategy was applied:
 - Used GridSearchCV
 - Performed cross-validation
 
-## Feature Engineering Approach (Approach 4)
+## Feature Engineering Approach 
 To better represent overall customer sentiment, an additional engineered feature was introduced based on survey responses.
 - A new feature avg_X was created representing the average rating across X1–X6.
 - Assumption: a generally happy customer would provide an average rating around 3 or higher.
